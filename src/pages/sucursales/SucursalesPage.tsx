@@ -238,12 +238,12 @@ export default function SucursalesPage() {
         open={modalOpen}
         sucursal={editando}
         matrizSucursal={(() => {
-          if (editando) return null;
-          // Preferir la sucursal con el menor ID de la lista cargada
-          if (sucursales.length > 0)
-            return sucursales.reduce((min, s) => s.id < min.id ? s : min, sucursales[0]);
-          // Fallback: la sucursal activa del store (persiste entre navegaciones)
-          if (sucursalActiva)
+          // La matriz es la sucursal con el menor ID, excluyendo la que se edita
+          const candidatos = sucursales.filter(s => s.id !== editando?.id);
+          if (candidatos.length > 0)
+            return candidatos.reduce((min, s) => s.id < min.id ? s : min, candidatos[0]);
+          // Fallback: la sucursal activa del store si no hay lista cargada aún
+          if (sucursalActiva && sucursalActiva.id !== editando?.id)
             return { id: sucursalActiva.id, nombre: sucursalActiva.nombre, activa: true };
           return null;
         })()}
