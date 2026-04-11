@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp, ShoppingCart, DollarSign, AlertTriangle,
   Package, Users, ArrowUpRight, Zap, BarChart3,
-  RefreshCw, Building2,
+  RefreshCw, Building2, CalendarDays, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -53,7 +53,12 @@ interface DashboardData {
   grafica: { hora: string; ventas: number; monto: number }[];
 }
 
-function useDashboard() {
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function useDashboard(fecha: string) {
   const { sucursalActiva } = useSucursalStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,12 +68,12 @@ function useDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const hoy = new Date();
-      const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).toISOString();
-      const fin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59).toISOString();
+      const [y, m, d] = fecha.split('-').map(Number);
+      const desde = new Date(y, m - 1, d, 0, 0, 0, 0).toISOString();
+      const hasta = new Date(y, m - 1, d, 23, 59, 59, 999).toISOString();
 
       const [ventasRes, productosRes] = await Promise.allSettled([
-        ventasApi.getAll({ fecha_inicio: inicio, fecha_fin: fin, limit: 20 }),
+        ventasApi.getAll({ desde, hasta, limit: 100 }),
         productosApi.getAll({ limit: 1 }),
       ]);
 
@@ -94,8 +99,9 @@ function useDashboard() {
 
       let productosCount = 0;
       if (productosRes.status === 'fulfilled') {
+        const meta = productosRes.value.data?.meta;
         const pd = productosRes.value.data?.data;
-        productosCount = pd?.total ?? pd?.length ?? 0;
+        productosCount = meta?.total ?? (Array.isArray(pd) ? pd.length : (pd?.total ?? 0));
       }
 
       let stockAlertas: StockAlerta[] = [];
@@ -135,7 +141,7 @@ function useDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [sucursalActiva]);
+  }, [sucursalActiva, fecha]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
   return { data, loading, error, refresh: fetchData };
@@ -205,13 +211,26 @@ function ChartTooltip({ active, payload, label }: any) {
 export default function DashboardPage() {
   const { usuario } = useAuthStore();
   const { sucursalActiva } = useSucursalStore();
-  const { data, loading, error, refresh } = useDashboard();
+  const [fechaVer, setFechaVer] = useState(todayStr);
+  const { data, loading, error, refresh } = useDashboard(fechaVer);
   const navigate = useNavigate();
   const [chartTab, setChartTab] = useState('area');
 
+  const esHoy = fechaVer === todayStr();
+  const labelDia = esHoy
+    ? 'Hoy'
+    : new Date(fechaVer + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+
+  const moverDia = (delta: number) => {
+    const [y, m, d] = fechaVer.split('-').map(Number);
+    const nueva = new Date(y, m - 1, d + delta);
+    const str = `${nueva.getFullYear()}-${String(nueva.getMonth() + 1).padStart(2, '0')}-${String(nueva.getDate()).padStart(2, '0')}`;
+    if (str <= todayStr()) setFechaVer(str);
+  };
+
   const kpis: KPI[] = data ? [
-    { label: 'Ventas Hoy', value: String(data.ventasHoy), sub: 'Transacciones completadas', icon: <ShoppingCart size={16} />, trend: 'up' },
-    { label: 'Ingresos Hoy', value: fmt(data.totalHoy), sub: 'Total facturado', icon: <DollarSign size={16} />, trend: data.totalHoy > 0 ? 'up' : 'neutral' },
+    { label: `Ventas · ${labelDia}`, value: String(data.ventasHoy), sub: 'Transacciones completadas', icon: <ShoppingCart size={16} />, trend: esHoy ? 'up' : undefined },
+    { label: `Ingresos · ${labelDia}`, value: fmt(data.totalHoy), sub: 'Total facturado', icon: <DollarSign size={16} />, trend: data.totalHoy > 0 ? 'up' : 'neutral' },
     { label: 'Ticket Promedio', value: fmt(data.ticketPromedio), sub: 'Promedio por venta', icon: <TrendingUp size={16} /> },
     { label: 'Productos', value: String(data.productosCount), sub: 'En catálogo', icon: <Package size={16} /> },
   ] : [];
@@ -238,6 +257,36 @@ export default function DashboardPage() {
           <Badge variant="outline" className="gap-1.5 text-muted-foreground">
             <Users size={12} /> {usuario?.nombre}
           </Badge>
+
+          {/* Selector de fecha */}
+          <div className="flex items-center gap-1 rounded-lg border border-border bg-card px-1 py-1">
+            <button
+              onClick={() => moverDia(-1)}
+              className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+              title="Día anterior"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <div className="relative flex items-center">
+              <CalendarDays size={13} className="absolute left-2 text-[#99ff3d] pointer-events-none" />
+              <input
+                type="date"
+                value={fechaVer}
+                max={todayStr()}
+                onChange={(e) => e.target.value && setFechaVer(e.target.value)}
+                className="pl-7 pr-2 py-0.5 text-xs bg-transparent text-white border-none outline-none cursor-pointer [color-scheme:dark]"
+              />
+            </div>
+            <button
+              onClick={() => moverDia(1)}
+              disabled={esHoy}
+              className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              title="Día siguiente"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+
           <Button size="icon" variant="ghost" onClick={refresh} disabled={loading}
             className="text-muted-foreground hover:text-[#99ff3d]" title="Actualizar"
           >
@@ -263,7 +312,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <BarChart3 size={16} className="text-[#99ff3d]" /> Actividad de Hoy
+                  <BarChart3 size={16} className="text-[#99ff3d]" /> Actividad · {labelDia}
                 </CardTitle>
                 <CardDescription>Ventas por hora</CardDescription>
               </div>
@@ -367,7 +416,7 @@ export default function DashboardPage() {
             ) : data?.ventasRecientes?.length === 0 ? (
               <div className="text-center py-8">
                 <ShoppingCart size={32} className="mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Sin ventas registradas hoy</p>
+                <p className="text-sm text-muted-foreground">Sin ventas registradas{esHoy ? ' hoy' : ` el ${labelDia}`}</p>
                 <Button size="sm" variant="lime" className="mt-3 gap-1.5" onClick={() => navigate('/ventas')}>
                   <Zap size={13} /> Nueva Venta
                 </Button>
