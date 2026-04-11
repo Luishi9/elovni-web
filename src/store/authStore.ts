@@ -27,8 +27,10 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
+type AuthPersistedState = Pick<AuthState, 'accessToken' | 'refreshToken' | 'usuario' | 'isAuthenticated'>;
+
 export const useAuthStore = create<AuthState>()(
-  persist(
+  persist<AuthState, [], [], AuthPersistedState>(
     (set, get) => ({
       accessToken: null,
       refreshToken: null,
@@ -81,7 +83,7 @@ export const useAuthStore = create<AuthState>()(
         setItem: (key, value) => sessionStorage.setItem(key, JSON.stringify(value)),
         removeItem: (key) => sessionStorage.removeItem(key),
       },
-      partialize: (state): Pick<AuthState, 'accessToken' | 'refreshToken' | 'usuario' | 'isAuthenticated'> => ({
+      partialize: (state): AuthPersistedState => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         usuario: state.usuario,
