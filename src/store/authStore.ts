@@ -81,7 +81,7 @@ export const useAuthStore = create<AuthState>()(
         setItem: (key, value) => sessionStorage.setItem(key, JSON.stringify(value)),
         removeItem: (key) => sessionStorage.removeItem(key),
       },
-      partialize: (state) => ({
+      partialize: (state): Pick<AuthState, 'accessToken' | 'refreshToken' | 'usuario' | 'isAuthenticated'> => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         usuario: state.usuario,
