@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PackageSearch } from 'lucide-react';
 
 import { sucursalesApi, Sucursal, SucursalDTO } from '@/api/sucursales.api';
 import { Button } from '@/components/ui/button';
@@ -14,17 +14,19 @@ import { Switch } from '@/components/ui/switch';
 interface Props {
   open: boolean;
   sucursal: Sucursal | null;
+  matrizSucursal?: Sucursal | null;
   onClose: () => void;
   onSaved: () => void;
 }
 
-export default function SucursalFormModal({ open, sucursal, onClose, onSaved }: Props) {
+export default function SucursalFormModal({ open, sucursal, matrizSucursal, onClose, onSaved }: Props) {
   const isEdit = !!sucursal;
 
   const [nombre, setNombre] = useState('');
   const [direccion, setDireccion] = useState('');
   const [telefono, setTelefono] = useState('');
   const [activa, setActiva] = useState(true);
+  const [copiarProductos, setCopiarProductos] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,6 +36,7 @@ export default function SucursalFormModal({ open, sucursal, onClose, onSaved }: 
       setDireccion(sucursal?.direccion ?? '');
       setTelefono(sucursal?.telefono ?? '');
       setActiva(sucursal?.activa ?? true);
+      setCopiarProductos(false);
       setError('');
     }
   }, [open, sucursal]);
@@ -49,6 +52,7 @@ export default function SucursalFormModal({ open, sucursal, onClose, onSaved }: 
         direccion: direccion.trim() || undefined,
         telefono: telefono.trim() || undefined,
         activa,
+        ...(!isEdit && matrizSucursal ? { copiarProductos } : {}),
       };
       if (isEdit) {
         await sucursalesApi.update(sucursal!.id, dto);
@@ -128,6 +132,22 @@ export default function SucursalFormModal({ open, sucursal, onClose, onSaved }: 
                 <p className="text-xs text-muted-foreground">Las sucursales inactivas no pueden usarse en ventas</p>
               </div>
               <Switch checked={activa} onCheckedChange={setActiva} />
+            </div>
+          )}
+
+          {/* Copiar productos de la matriz (solo en creación si existe una sucursal previa) */}
+          {!isEdit && matrizSucursal && (
+            <div className="flex items-center justify-between rounded-lg border border-border bg-white/5 px-4 py-3">
+              <div className="flex items-start gap-2.5">
+                <PackageSearch size={16} className="text-[#99ff3d] shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-white/80 font-medium">Heredar catálogo de productos</p>
+                  <p className="text-xs text-muted-foreground">
+                    Copia los productos de <span className="text-white/60 font-medium">{matrizSucursal.nombre}</span> a esta sucursal con stock en 0
+                  </p>
+                </div>
+              </div>
+              <Switch checked={copiarProductos} onCheckedChange={setCopiarProductos} />
             </div>
           )}
 

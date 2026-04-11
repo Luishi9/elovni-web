@@ -237,6 +237,11 @@ export default function SucursalesPage() {
       <SucursalFormModal
         open={modalOpen}
         sucursal={editando}
+        matrizSucursal={
+          !editando && sucursales.length > 0
+            ? sucursales.reduce((min, s) => s.id < min.id ? s : min, sucursales[0])
+            : null
+        }
         onClose={() => { setModalOpen(false); setEditando(null); }}
         onSaved={handleSaved}
       />
