@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { ProductoFormModal } from './components/ProductoFormModal';
+import { getImageUrl } from '@/utils/format';
 
 export default function ProductosPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -195,7 +196,7 @@ export default function ProductosPage() {
                       {producto.imagen_url ? (
                         <div className="w-10 h-10 rounded-md overflow-hidden bg-background/50 border border-border shadow-inner">
                           <img 
-                            src={producto.imagen_url} 
+                            src={getImageUrl(producto.imagen_url)} 
                             alt={producto.nombre} 
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                           />

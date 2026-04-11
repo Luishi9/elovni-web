@@ -17,6 +17,7 @@ import {
 
 import { AjusteModal } from './components/AjusteModal';
 import { KardexModal } from './components/KardexModal';
+import { getImageUrl } from '@/utils/format';
 
 interface InventarioItem {
   id: number;
@@ -215,7 +216,7 @@ export default function InventarioPage() {
                         {item.productos.imagen_url ? (
                           <div className="w-9 h-9 rounded-md overflow-hidden bg-background/50 border border-border">
                             <img
-                              src={item.productos.imagen_url}
+                              src={getImageUrl(item.productos.imagen_url)}
                               alt={item.productos.nombre}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />

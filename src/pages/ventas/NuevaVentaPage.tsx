@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TicketImpresion, TicketData, buildTicketHtml } from './components/TicketImpresion';
 import QRTicketModal from './components/QRTicketModal';
+import { getImageUrl } from '@/utils/format';
 
 interface ProductoCatalogo {
   id: number;
@@ -297,7 +298,7 @@ export default function NuevaVentaPage() {
                 >
                   <div className="aspect-square bg-background/50 overflow-hidden">
                     {p.imagen_url ? (
-                      <img src={p.imagen_url} alt={p.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <img src={getImageUrl(p.imagen_url)} alt={p.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
                         <Package size={32} />

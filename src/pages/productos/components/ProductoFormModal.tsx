@@ -35,6 +35,7 @@ import { useSucursalStore } from '@/store/sucursalStore';
 import { useAuthStore } from '@/store/authStore';
 import { Producto } from '@/types/producto.types';
 import { categoriasApi, Categoria } from '@/api/categorias.api';
+import { getImageUrl } from '@/utils/format';
 
 const formSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
@@ -105,7 +106,7 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
         descripcion: producto.descripcion ?? '',
         cantidadInicial: undefined,
       });
-      setImagePreview(producto.imagen_url ?? null);
+      setImagePreview(getImageUrl(producto.imagen_url) ?? null);
       setSelectedFile(null);
     } else if (open && !producto) {
       form.reset({ nombre: '', codigo: '', categoriaId: undefined, precioVenta: 0, precioCompra: undefined, unidadMedida: 'unidad', descripcion: '', cantidadInicial: undefined });
