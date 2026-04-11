@@ -237,11 +237,16 @@ export default function SucursalesPage() {
       <SucursalFormModal
         open={modalOpen}
         sucursal={editando}
-        matrizSucursal={
-          !editando && sucursales.length > 0
-            ? sucursales.reduce((min, s) => s.id < min.id ? s : min, sucursales[0])
-            : null
-        }
+        matrizSucursal={(() => {
+          if (editando) return null;
+          // Preferir la sucursal con el menor ID de la lista cargada
+          if (sucursales.length > 0)
+            return sucursales.reduce((min, s) => s.id < min.id ? s : min, sucursales[0]);
+          // Fallback: la sucursal activa del store (persiste entre navegaciones)
+          if (sucursalActiva)
+            return { id: sucursalActiva.id, nombre: sucursalActiva.nombre, activa: true };
+          return null;
+        })()}
         onClose={() => { setModalOpen(false); setEditando(null); }}
         onSaved={handleSaved}
       />
