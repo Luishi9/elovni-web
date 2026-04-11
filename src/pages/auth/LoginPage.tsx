@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, Rocket } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
-import logoImage from '@/assets/elovni-logo.png';
+import logoImage from '@/assets/logo.png';
 import './LoginPage.css';
 
 const schema = z.object({

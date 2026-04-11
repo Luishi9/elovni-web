@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import logoImage from '@/assets/elovni-logo.png';
+import logoImage from '@/assets/logo.png';
 
 export interface TicketData {
   ventaId: number;

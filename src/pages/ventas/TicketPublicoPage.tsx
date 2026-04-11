@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TicketData } from './components/TicketImpresion';
-import elovniLogo from '@/assets/elovni-logo.png';
+import elovniLogo from '@/assets/logo.png';
 
 const METODO_LABEL: Record<string, string> = {
   efectivo: 'Efectivo',

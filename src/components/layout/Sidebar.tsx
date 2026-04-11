@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useAuthStore } from '@/store/authStore';
-import logoImage from '@/assets/elovni-logo.png';
+import logoImage from '@/assets/logo.png';
 
 const navItems = [
   { to: '/dashboard',  label: 'Dashboard',   icon: LayoutDashboard },
