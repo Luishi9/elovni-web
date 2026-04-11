@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import "tw-animate-css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── Tema dark: espacio / ElOvni ── */
+  :root {
+    /* Base */
+    --background: 220 20% 7%;
+    --foreground: 210 40% 96%;
+    /* Card */
+    --card: 220 18% 11%;
+    --card-foreground: 210 40% 96%;
+    /* Popover */
+    --popover: 220 18% 11%;
+    --popover-foreground: 210 40% 96%;
+    /* Primary (lime-green) */
+    --primary: 85 100% 62%;
+    --primary-foreground: 220 20% 7%;
+    /* Secondary */
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 210 40% 96%;
+    /* Muted */
+    --muted: 220 16% 16%;
+    --muted-foreground: 215 16% 55%;
+    /* Accent */
+    --accent: 220 16% 20%;
+    --accent-foreground: 210 40% 96%;
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    /* Border / Input / Ring */
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 85 100% 62%;
+    /* Radius */
+    --radius: 0.625rem;
+    /* ── Sidebar ── */
+    --sidebar: 220 18% 9%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 85 100% 62%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 16% 16%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 220 14% 18%;
+    --sidebar-ring: 85 100% 62%;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Rajdhani', system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+}
