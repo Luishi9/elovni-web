@@ -12,7 +12,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
@@ -81,22 +80,20 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map(({ to, label, icon: Icon }) => (
                 <SidebarMenuItem key={to}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={to}
-                      onClick={handleNavClick}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 w-full no-underline transition-colors duration-150 ${
-                          isActive
-                            ? 'text-[#99ff3d] font-semibold'
-                            : 'text-sidebar-foreground/70 hover:text-sidebar-foreground'
-                        }`
-                      }
-                    >
-                      <Icon size={17} />
-                      <span>{label}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
+                  <NavLink
+                    to={to}
+                    onClick={handleNavClick}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-sm no-underline transition-colors duration-150 ${
+                        isActive
+                          ? 'text-[#99ff3d] font-semibold bg-sidebar-accent'
+                          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                      }`
+                    }
+                  >
+                    <Icon size={17} />
+                    <span>{label}</span>
+                  </NavLink>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -113,22 +110,20 @@ export function AppSidebar() {
               <SidebarMenu>
                 {adminItems.map(({ to, label, icon: Icon }) => (
                   <SidebarMenuItem key={to}>
-                    <SidebarMenuButton asChild>
-                      <NavLink
-                        to={to}
-                        onClick={handleNavClick}
-                        className={({ isActive }) =>
-                          `flex items-center gap-3 w-full no-underline transition-colors duration-150 ${
-                            isActive
-                              ? 'text-[#99ff3d] font-semibold'
-                              : 'text-sidebar-foreground/70 hover:text-sidebar-foreground'
-                          }`
-                        }
-                      >
-                        <Icon size={17} />
-                        <span>{label}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
+                    <NavLink
+                      to={to}
+                      onClick={handleNavClick}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 w-full px-2 py-1.5 rounded-md text-sm no-underline transition-colors duration-150 ${
+                          isActive
+                            ? 'text-[#99ff3d] font-semibold bg-sidebar-accent'
+                            : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                        }`
+                      }
+                    >
+                      <Icon size={17} />
+                      <span>{label}</span>
+                    </NavLink>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

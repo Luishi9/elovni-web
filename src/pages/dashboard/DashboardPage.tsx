@@ -87,7 +87,7 @@ function useDashboard(fecha: string) {
           total: parseFloat(v.total ?? v.monto_total ?? 0),
           items: v.items_count ?? v.venta_detalle?.length ?? 1,
           estado: v.estado ?? 'completada',
-          fecha: v.fecha_venta ?? v.createdAt ?? new Date().toISOString(),
+          fecha: v.fecha_venta ?? v.created_at ?? v.createdAt ?? new Date().toISOString(),
         }));
         totalHoy = ventasList
           .filter((v) => v.estado !== 'cancelada')
