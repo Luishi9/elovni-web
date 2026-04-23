@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
 import { productosApi } from '@/api/productos.api';
+import { inventarioApi } from '@/api/inventario.api';
 import { useSucursalStore } from '@/store/sucursalStore';
 import { useAuthStore } from '@/store/authStore';
 import { Producto } from '@/types/producto.types';
@@ -164,6 +165,16 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
         }
       }
 
+      if (isEditing && tieneExistencias && values.cantidadInicial && values.cantidadInicial > 0 && sucursalEfectiva && producto) {
+        await inventarioApi.ajustar({
+          productoId: producto.id,
+          sucursalId: sucursalEfectiva.id,
+          tipo: 'entrada',
+          cantidad: values.cantidadInicial,
+          notas: 'Entrada manual desde edición de producto',
+        });
+      }
+
       if (selectedFile) {
         formData.append('imagen', selectedFile);
       }
@@ -292,90 +303,107 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="unidadMedida"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Unidad</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="unidadMedida"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Unidad de medida</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <Input placeholder="Ej. unidad, kg, lts" {...field} className="bg-background" />
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Selecciona una unidad" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                        <SelectContent className="bg-card border border-border text-foreground z-[200]">
+                          <SelectItem value="unidad">Unidad</SelectItem>
+                          <SelectItem value="pieza">Pieza</SelectItem>
+                          <SelectItem value="par">Par</SelectItem>
+                          <SelectItem value="docena">Docena</SelectItem>
+                          <SelectItem value="caja">Caja</SelectItem>
+                          <SelectItem value="paquete">Paquete</SelectItem>
+                          <SelectItem value="rollo">Rollo</SelectItem>
+                          <SelectItem value="bolsa">Bolsa</SelectItem>
+                          <SelectItem value="kg">Kilogramo (kg)</SelectItem>
+                          <SelectItem value="g">Gramo (g)</SelectItem>
+                          <SelectItem value="ton">Tonelada (ton)</SelectItem>
+                          <SelectItem value="litro">Litro</SelectItem>
+                          <SelectItem value="ml">Mililitro (ml)</SelectItem>
+                          <SelectItem value="metro">Metro</SelectItem>
+                          <SelectItem value="cm">Centímetro (cm)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 {/* ── Existencias ── */}
-                {!isEditing && (
-                  <div className="space-y-3 rounded-lg border border-border bg-background/50 p-3">
-                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={tieneExistencias}
-                        onChange={(e) => {
-                          setTieneExistencias(e.target.checked);
-                          if (!e.target.checked) {
-                            form.setValue('cantidadInicial', undefined);
-                            form.setValue('stockMinimo', undefined);
-                          }
-                        }}
-                        className="w-4 h-4 accent-[#99ff3d] cursor-pointer"
-                      />
-                      <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                        <Package size={14} className="text-[#99ff3d]" />
-                        Este producto tiene existencias (inventario)
-                      </span>
-                    </label>
+                <div className="space-y-3 rounded-lg border border-border bg-background/50 p-3">
+                  <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={tieneExistencias}
+                      onChange={(e) => {
+                        setTieneExistencias(e.target.checked);
+                        if (!e.target.checked) {
+                          form.setValue('cantidadInicial', undefined);
+                          form.setValue('stockMinimo', undefined);
+                        }
+                      }}
+                      className="w-4 h-4 accent-[#99ff3d] cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      <Package size={14} className="text-[#99ff3d]" />
+                      {isEditing ? 'Registrar movimiento de stock' : 'Este producto tiene existencias (inventario)'}
+                    </span>
+                  </label>
 
-                    {tieneExistencias && (
-                      <div className="grid grid-cols-2 gap-3 pt-1">
-                        <FormField
-                          control={form.control}
-                          name="cantidadInicial"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Cantidad inicial *</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  placeholder="0"
-                                  {...field}
-                                  value={field.value ?? ''}
-                                  className="bg-background font-mono border-[#99ff3d]/50 focus-visible:ring-[#99ff3d]"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="stockMinimo"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Stock mínimo</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  placeholder="Ej. 5"
-                                  {...field}
-                                  value={field.value ?? ''}
-                                  className="bg-background font-mono"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
+                  {tieneExistencias && (
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <FormField
+                        control={form.control}
+                        name="cantidadInicial"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{isEditing ? 'Cantidad a añadir *' : 'Cantidad inicial *'}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                {...field}
+                                value={field.value ?? ''}
+                                className="bg-background font-mono border-[#99ff3d]/50 focus-visible:ring-[#99ff3d]"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="stockMinimo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Stock mínimo</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="0"
+                                placeholder="Ej. 5"
+                                {...field}
+                                value={field.value ?? ''}
+                                className="bg-background font-mono"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Col 2 - Imagen y Extras */}
@@ -433,11 +461,12 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
             </div>
 
             {/* Mensaje de Info Stock */}
-            {!isEditing && tieneExistencias && form.watch('cantidadInicial') ? (
+            {tieneExistencias && form.watch('cantidadInicial') ? (
               <div className="bg-[#99ff3d]/10 border border-[#99ff3d]/20 rounded-lg p-3 text-sm text-[#99ff3d]">
                 <p>
-                  Se registrará una <strong>Entrada Inicial de {form.watch('cantidadInicial')}</strong> unidades
-                  para la sucursal <strong>{sucursalActiva?.nombre || 'actual'}</strong>.
+                  {isEditing
+                    ? <>Se registrará una <strong>Entrada de {form.watch('cantidadInicial')}</strong> unidades en la sucursal <strong>{sucursalEfectiva?.nombre || 'actual'}</strong>.</>
+                    : <>Se registrará una <strong>Entrada Inicial de {form.watch('cantidadInicial')}</strong> unidades en la sucursal <strong>{sucursalEfectiva?.nombre || 'actual'}</strong>.</>}
                   {form.watch('stockMinimo') ? ` Stock mínimo: ${form.watch('stockMinimo')} uds.` : ''}
                 </p>
               </div>
