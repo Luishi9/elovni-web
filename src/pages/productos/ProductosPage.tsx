@@ -153,9 +153,9 @@ export default function ProductosPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`overflow-auto rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <div className="h-full overflow-y-auto">
+        <div className="h-full">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-border">
