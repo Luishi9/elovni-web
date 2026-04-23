@@ -18,7 +18,7 @@ function MainContent() {
           <SidebarTrigger />
           <Header />
         </header>
-        <div className="flex-1 p-4 md:p-6 overflow-auto relative z-0">
+        <div className="flex-1 p-4 md:p-6 overflow-hidden relative z-0 flex flex-col">
           <Outlet />
         </div>
       </SidebarInset>

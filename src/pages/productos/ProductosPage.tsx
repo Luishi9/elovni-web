@@ -153,10 +153,9 @@ export default function ProductosPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`overflow-auto rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <div className="h-full">
-          <Table>
+        <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="w-[80px] sticky top-0 z-10 bg-card/90 backdrop-blur-md">Imagen</TableHead>
@@ -245,7 +244,6 @@ export default function ProductosPage() {
               )}
             </TableBody>
           </Table>
-        </div>
       </motion.div>
 
       {/* DIÁLOGO CONFIRMAR ELIMINACIÓN */}
