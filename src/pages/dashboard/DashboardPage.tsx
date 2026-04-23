@@ -107,14 +107,14 @@ function useDashboard(fecha: string) {
       let stockAlertas: StockAlerta[] = [];
       if (sucursalActiva) {
         try {
-          const invRes = await inventarioApi.getBySucursal(sucursalActiva.id, { stock_critico: true });
+          const invRes = await inventarioApi.getBySucursal(sucursalActiva.id, { soloStockBajo: true });
           const inv = invRes.data?.data;
           const invList = Array.isArray(inv) ? inv : [];
           stockAlertas = invList.slice(0, 6).map((i: any) => ({
             id: i.id ?? i.producto_id,
             nombre: i.producto?.nombre ?? i.nombre ?? 'Producto',
-            stock: i.stock,
-            stock_minimo: i.stock_minimo ?? 5,
+            stock: i.cantidad ?? 0, // cantidad actual
+            stock_minimo: i.stock_minimo ?? 0, // para mostrar en la tarjeta, aunque no se use para filtrar aquí
           }));
         } catch { /* sin stock crítico */ }
       }

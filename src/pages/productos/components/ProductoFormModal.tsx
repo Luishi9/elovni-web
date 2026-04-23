@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, Package } from 'lucide-react';
 
 import { 
   Dialog, 
@@ -46,6 +46,7 @@ const formSchema = z.object({
   unidadMedida: z.string().default('unidad'),
   descripcion: z.string().optional(),
   cantidadInicial: z.preprocess((val) => val ? Number(val) : undefined, z.number().min(0).optional()),
+  stockMinimo: z.preprocess((val) => val ? Number(val) : undefined, z.number().min(0).optional()),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -67,6 +68,7 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [tieneExistencias, setTieneExistencias] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Cargar categorías al montar
@@ -85,6 +87,7 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
       unidadMedida: 'unidad',
       descripcion: '',
       cantidadInicial: undefined,
+      stockMinimo: undefined,
     },
   });
 
@@ -105,11 +108,14 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
         unidadMedida: producto.unidad_medida ?? 'unidad',
         descripcion: producto.descripcion ?? '',
         cantidadInicial: undefined,
+        stockMinimo: undefined,
       });
+      setTieneExistencias(false);
       setImagePreview(getImageUrl(producto.imagen_url) ?? null);
       setSelectedFile(null);
     } else if (open && !producto) {
-      form.reset({ nombre: '', codigo: '', categoriaId: undefined, precioVenta: 0, precioCompra: undefined, unidadMedida: 'unidad', descripcion: '', cantidadInicial: undefined });
+      form.reset({ nombre: '', codigo: '', categoriaId: undefined, precioVenta: 0, precioCompra: undefined, unidadMedida: 'unidad', descripcion: '', cantidadInicial: undefined, stockMinimo: undefined });
+      setTieneExistencias(false);
       setImagePreview(null);
       setSelectedFile(null);
     }
@@ -150,9 +156,12 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
       if (values.unidadMedida) formData.append('unidadMedida', values.unidadMedida);
       if (values.descripcion) formData.append('descripcion', values.descripcion);
       
-      if (!isEditing && values.cantidadInicial && values.cantidadInicial > 0 && sucursalEfectiva) {
+      if (!isEditing && tieneExistencias && values.cantidadInicial && values.cantidadInicial > 0 && sucursalEfectiva) {
         formData.append('cantidadInicial', values.cantidadInicial.toString());
         formData.append('sucursalId', sucursalEfectiva.id.toString());
+        if (values.stockMinimo !== undefined && values.stockMinimo >= 0) {
+          formData.append('stockMinimo', values.stockMinimo.toString());
+        }
       }
 
       if (selectedFile) {
@@ -297,28 +306,76 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
                       </FormItem>
                     )}
                   />
-                  {!isEditing && (
-                    <FormField
-                      control={form.control}
-                      name="cantidadInicial"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Stock Inicial</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="Opcional" 
-                              {...field} 
-                              value={field.value ?? ''} 
-                              className="bg-background font-mono border-[#99ff3d]/50 focus-visible:ring-[#99ff3d]" 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
                 </div>
+
+                {/* ── Existencias ── */}
+                {!isEditing && (
+                  <div className="space-y-3 rounded-lg border border-border bg-background/50 p-3">
+                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={tieneExistencias}
+                        onChange={(e) => {
+                          setTieneExistencias(e.target.checked);
+                          if (!e.target.checked) {
+                            form.setValue('cantidadInicial', undefined);
+                            form.setValue('stockMinimo', undefined);
+                          }
+                        }}
+                        className="w-4 h-4 accent-[#99ff3d] cursor-pointer"
+                      />
+                      <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                        <Package size={14} className="text-[#99ff3d]" />
+                        Este producto tiene existencias (inventario)
+                      </span>
+                    </label>
+
+                    {tieneExistencias && (
+                      <div className="grid grid-cols-2 gap-3 pt-1">
+                        <FormField
+                          control={form.control}
+                          name="cantidadInicial"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cantidad inicial *</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  placeholder="0"
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  className="bg-background font-mono border-[#99ff3d]/50 focus-visible:ring-[#99ff3d]"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="stockMinimo"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Stock mínimo</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  placeholder="Ej. 5"
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  className="bg-background font-mono"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Col 2 - Imagen y Extras */}
@@ -376,9 +433,13 @@ export function ProductoFormModal({ open, onOpenChange, onSuccess, producto }: P
             </div>
 
             {/* Mensaje de Info Stock */}
-            {!isEditing && form.watch('cantidadInicial') ? (
+            {!isEditing && tieneExistencias && form.watch('cantidadInicial') ? (
               <div className="bg-[#99ff3d]/10 border border-[#99ff3d]/20 rounded-lg p-3 text-sm text-[#99ff3d]">
-                <p>Se registrará una <strong>Entrada Inicial de {form.watch('cantidadInicial')}</strong> para la sucursal <strong>{sucursalActiva?.nombre || 'actual'}</strong>.</p>
+                <p>
+                  Se registrará una <strong>Entrada Inicial de {form.watch('cantidadInicial')}</strong> unidades
+                  para la sucursal <strong>{sucursalActiva?.nombre || 'actual'}</strong>.
+                  {form.watch('stockMinimo') ? ` Stock mínimo: ${form.watch('stockMinimo')} uds.` : ''}
+                </p>
               </div>
             ) : null}
 
