@@ -130,8 +130,8 @@ export default function ProductosPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          
-          <Button 
+
+          <Button
             onClick={() => setIsModalOpen(true)}
             className="h-10 px-4 bg-[#99ff3d] hover:bg-[#7fe62e] text-black font-semibold shadow-[0_0_15px_rgba(153,255,61,0.2)] whitespace-nowrap"
           >
@@ -141,110 +141,110 @@ export default function ProductosPage() {
         </motion.div>
       </div>
 
-      <ProductoFormModal 
-        open={isModalOpen} 
+      <ProductoFormModal
+        open={isModalOpen}
         onOpenChange={(v) => { setIsModalOpen(v); if (!v) setProductoAEditar(null); }}
         onSuccess={() => fetchProductos(searchQuery)}
         producto={productoAEditar}
       />
 
       {/* DATA TABLE SECTION */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md overflow-hidden flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
         <div className="h-full overflow-y-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              <TableHead className="w-[80px] sticky top-0 z-10 bg-card/90 backdrop-blur-md">Imagen</TableHead>
-              <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Nombre</TableHead>
-              <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Código</TableHead>
-              <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Venta</TableHead>
-              <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Compra</TableHead>
-              <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Estado</TableHead>
-              <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
-                  <p className="mt-2 text-xs text-muted-foreground">Cargando catálogo...</p>
-                </TableCell>
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-border">
+                <TableHead className="w-[80px] sticky top-0 z-10 bg-card/90 backdrop-blur-md">Imagen</TableHead>
+                <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Nombre</TableHead>
+                <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Código</TableHead>
+                <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Venta</TableHead>
+                <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Compra</TableHead>
+                <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Estado</TableHead>
+                <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Acciones</TableHead>
               </TableRow>
-            ) : productos.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center text-muted-foreground">
-                  No se encontraron productos.
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {productos.map((producto, i) => (
-                  <motion.tr
-                    key={producto.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="group border-b border-border hover:bg-white/[0.02] transition-colors"
-                  >
-                    <TableCell>
-                      {producto.imagen_url ? (
-                        <div className="w-10 h-10 rounded-md overflow-hidden bg-background/50 border border-border shadow-inner">
-                          <img 
-                            src={getImageUrl(producto.imagen_url)} 
-                            alt={producto.nombre} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                          />
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-48 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
+                    <p className="mt-2 text-xs text-muted-foreground">Cargando catálogo...</p>
+                  </TableCell>
+                </TableRow>
+              ) : productos.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-48 text-center text-muted-foreground">
+                    No se encontraron productos.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <AnimatePresence>
+                  {productos.map((producto, i) => (
+                    <motion.tr
+                      key={producto.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="group border-b border-border hover:bg-white/[0.02] transition-colors"
+                    >
+                      <TableCell>
+                        {producto.imagen_url ? (
+                          <div className="w-10 h-10 rounded-md overflow-hidden bg-background/50 border border-border shadow-inner">
+                            <img
+                              src={getImageUrl(producto.imagen_url)}
+                              alt={producto.nombre}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30 shadow-inner">
+                            <ImageIcon size={18} />
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium text-foreground tracking-wide">{producto.nombre}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs font-mono">{producto.codigo || '—'}</TableCell>
+                      <TableCell className="text-right font-semibold text-[#99ff3d] tracking-wide">
+                        ${Number(producto.precio_venta).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground font-mono text-sm">
+                        {producto.precio_compra ? `$${Number(producto.precio_compra).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={producto.activo ? 'default' : 'secondary'} className={producto.activo ? 'bg-[#99ff3d]/10 text-[#99ff3d] border-[#99ff3d]/20 shadow-[0_0_10px_rgba(153,255,61,0.1)]' : ''}>
+                          {producto.activo ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => handleEditar(producto)}
+                            title="Editar"
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => setProductoAEliminar(producto)}
+                            title="Eliminar"
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
-                      ) : (
-                        <div className="w-10 h-10 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30 shadow-inner">
-                          <ImageIcon size={18} />
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium text-foreground tracking-wide">{producto.nombre}</TableCell>
-                    <TableCell className="text-muted-foreground text-xs font-mono">{producto.codigo || '—'}</TableCell>
-                    <TableCell className="text-right font-semibold text-[#99ff3d] tracking-wide">
-                      ${Number(producto.precio_venta).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground font-mono text-sm">
-                      {producto.precio_compra ? `$${Number(producto.precio_compra).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={producto.activo ? 'default' : 'secondary'} className={producto.activo ? 'bg-[#99ff3d]/10 text-[#99ff3d] border-[#99ff3d]/20 shadow-[0_0_10px_rgba(153,255,61,0.1)]' : ''}>
-                        {producto.activo ? 'Activo' : 'Inactivo'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          onClick={() => handleEditar(producto)}
-                          title="Editar"
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
-                        >
-                          <Pencil size={14} />
-                        </button>
-                        <button
-                          onClick={() => setProductoAEliminar(producto)}
-                          title="Eliminar"
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </TableCell>
-                  </motion.tr>
-                ))}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
+                      </TableCell>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </motion.div>
 
