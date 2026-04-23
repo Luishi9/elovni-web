@@ -94,7 +94,7 @@ export default function ProductosPage() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-6">
+    <div className="flex flex-col gap-6 h-full min-h-0">
       {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <motion.div

@@ -13,12 +13,12 @@ function MainContent() {
           onClick={() => setOpen(false)}
         />
       )}
-      <SidebarInset>
-        <header className="flex items-center gap-2 px-4 py-3 border-b border-border">
+      <SidebarInset className="h-svh overflow-hidden">
+        <header className="flex shrink-0 items-center gap-2 px-4 py-3 border-b border-border">
           <SidebarTrigger />
           <Header />
         </header>
-        <div className="flex-1 p-4 md:p-6 overflow-hidden relative z-0 flex flex-col">
+        <div className="flex-1 min-h-0 p-4 md:p-6 overflow-hidden relative z-0 flex flex-col">
           <Outlet />
         </div>
       </SidebarInset>
