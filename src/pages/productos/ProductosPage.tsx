@@ -150,8 +150,8 @@ export default function ProductosPage() {
 
       {/* DATA TABLE SECTION */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
