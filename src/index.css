@@ -8,6 +8,7 @@
 @layer base {
   /* ── Tema dark: espacio / ElOvni ── */
   :root {
+    color-scheme: dark;
     /* Base */
     --background: 220 20% 7%;
     --foreground: 210 40% 96%;
