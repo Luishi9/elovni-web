@@ -8,15 +8,6 @@ import { Producto } from '@/types/producto.types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -153,34 +144,50 @@ export default function ProductosPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-hidden shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-border">
-                <TableHead className="w-[80px] sticky top-0 z-10 bg-card/90 backdrop-blur-md">Imagen</TableHead>
-                <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Nombre</TableHead>
-                <TableHead className="sticky top-0 z-10 bg-card/90 backdrop-blur-md">Código</TableHead>
-                <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Venta</TableHead>
-                <TableHead className="text-right sticky top-0 z-10 bg-card/90 backdrop-blur-md">Precio Compra</TableHead>
-                <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Estado</TableHead>
-                <TableHead className="text-center sticky top-0 z-10 bg-card/90 backdrop-blur-md">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        <div className="relative flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+          <div className="min-w-full">
+            <table className="w-full text-sm text-left rtl:text-right text-foreground">
+            <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
+              <tr>
+                <th scope="col" className="px-6 py-4">
+                  <span className="sr-only">Imagen</span>
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold">
+                  Nombre
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold">
+                  Código
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">
+                  Precio Venta
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">
+                  Precio Compra
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">
+                  Estado
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-48 text-center">
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center">
                     <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
                     <p className="mt-2 text-xs text-muted-foreground">Cargando catálogo...</p>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : productos.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-48 text-center text-muted-foreground">
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                     No se encontraron productos.
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 <AnimatePresence>
                   {productos.map((producto, i) => (
@@ -190,60 +197,66 @@ export default function ProductosPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ delay: i * 0.05 }}
-                      className="group border-b border-border hover:bg-white/[0.02] transition-colors"
+                      className="bg-background/30 border-b border-border hover:bg-background/50 transition-colors"
                     >
-                      <TableCell>
+                      <td className="p-4">
                         {producto.imagen_url ? (
-                          <div className="w-10 h-10 rounded-md overflow-hidden bg-background/50 border border-border shadow-inner">
+                          <div className="w-12 h-12 rounded-md overflow-hidden bg-background/50 border border-border shadow-inner">
                             <img
                               src={getImageUrl(producto.imagen_url)}
                               alt={producto.nombre}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                             />
                           </div>
                         ) : (
-                          <div className="w-10 h-10 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30 shadow-inner">
-                            <ImageIcon size={18} />
+                          <div className="w-12 h-12 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30 shadow-inner">
+                            <ImageIcon size={20} />
                           </div>
                         )}
-                      </TableCell>
-                      <TableCell className="font-medium text-foreground tracking-wide">{producto.nombre}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs font-mono">{producto.codigo || '—'}</TableCell>
-                      <TableCell className="text-right font-semibold text-[#99ff3d] tracking-wide">
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-foreground tracking-wide">
+                        {producto.nombre}
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground text-xs font-mono">
+                        {producto.codigo || '—'}
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-right text-[#99ff3d] tracking-wide">
                         ${Number(producto.precio_venta).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground font-mono text-sm">
+                      </td>
+                      <td className="px-6 py-4 text-right text-muted-foreground font-mono text-sm">
                         {producto.precio_compra ? `$${Number(producto.precio_compra).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={producto.activo ? 'default' : 'secondary'} className={producto.activo ? 'bg-[#99ff3d]/10 text-[#99ff3d] border-[#99ff3d]/20 shadow-[0_0_10px_rgba(153,255,61,0.1)]' : ''}>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${producto.activo ? 'bg-[#99ff3d]/10 text-[#99ff3d] border border-[#99ff3d]/20' : 'bg-gray-500/10 text-gray-400 border border-gray-500/20'}`}>
                           {producto.activo ? 'Activo' : 'Inactivo'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center gap-1">
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleEditar(producto)}
                             title="Editar"
-                            className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
+                            className="p-2 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
                           >
-                            <Pencil size={14} />
+                            <Pencil size={16} />
                           </button>
                           <button
                             onClick={() => setProductoAEliminar(producto)}
                             title="Eliminar"
-                            className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                            className="p-2 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
-                      </TableCell>
+                      </td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
+          </div>
+        </div>
       </motion.div>
 
       {/* DIÁLOGO CONFIRMAR ELIMINACIÓN */}

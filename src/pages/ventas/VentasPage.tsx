@@ -13,10 +13,6 @@ import { Venta } from '@/types/venta.types';
 import { useSucursalStore } from '@/store/sucursalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
 
 const METODO_LABEL: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -213,135 +209,138 @@ export default function VentasPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md overflow-hidden flex-1 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-y-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              {['#', 'Fecha', 'Cliente', 'Vendedor', 'Método', 'Total', 'Estado', ''].map((h) => (
-                <TableHead key={h} className="bg-background/50 backdrop-blur-md text-xs uppercase tracking-wider">
-                  {h}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
-                  <p className="mt-2 text-xs text-muted-foreground">Cargando ventas...</p>
-                </TableCell>
-              </TableRow>
-            ) : ventas.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
-                  <Receipt size={36} className="mx-auto mb-3 opacity-20" />
-                  <p>No se encontraron ventas.</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {ventas.map((venta, i) => {
-                  const estado = ESTADO_CONFIG[venta.estado] ?? ESTADO_CONFIG.pendiente;
-                  const isExpanded = expandedId === venta.id;
-                  return (
-                    <Fragment key={venta.id}>
-                      <motion.tr
-                        key={venta.id}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="group border-b border-border hover:bg-white/[0.02] transition-colors cursor-pointer"
-                        onClick={() => setExpandedId(isExpanded ? null : venta.id)}
-                      >
-                        <TableCell className="font-mono text-xs text-muted-foreground">#{venta.id}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                          {new Date(venta.created_at).toLocaleDateString('es-MX', {
-                            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-                          })}
-                        </TableCell>
-                        <TableCell className="text-sm">{venta.clientes?.nombre ?? 'Público General'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{venta.usuarios?.nombre ?? '—'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {METODO_LABEL[venta.metodo_pago] ?? venta.metodo_pago}
-                        </TableCell>
-                        <TableCell className="font-bold text-[#99ff3d] font-mono">
-                          ${Number(venta.total).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`flex items-center gap-1 w-fit text-xs border ${estado.cls}`}>
-                            {estado.icon}
-                            {estado.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => handleReprintTicket(venta, e)}
-                              className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
-                              title="Reimprimir ticket"
-                            >
-                              <Printer size={14} />
-                            </button>
-                            <button
-                              onClick={(e) => handleShowQR(venta, e)}
-                              className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
-                              title="QR para cliente"
-                            >
-                              <QrCode size={14} />
-                            </button>
-                            {isExpanded
-                              ? <ChevronUp size={14} className="text-muted-foreground" />
-                              : <ChevronDown size={14} className="text-muted-foreground" />}
-                          </div>
-                        </TableCell>
-                      </motion.tr>
-
-                      {isExpanded && (
+        <div className="relative overflow-x-auto">
+          <table className="w-full text-sm text-left rtl:text-right text-foreground">
+            <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
+              <tr>
+                <th scope="col" className="px-6 py-4 font-semibold">#</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Fecha</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Cliente</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Vendedor</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Método</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">Total</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">Estado</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
+                    <p className="mt-2 text-xs text-muted-foreground">Cargando ventas...</p>
+                  </td>
+                </tr>
+              ) : ventas.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
+                    <Receipt size={36} className="mx-auto mb-3 opacity-20" />
+                    <p>No se encontraron ventas.</p>
+                  </td>
+                </tr>
+              ) : (
+                <AnimatePresence>
+                  {ventas.map((venta, i) => {
+                    const estado = ESTADO_CONFIG[venta.estado] ?? ESTADO_CONFIG.pendiente;
+                    const isExpanded = expandedId === venta.id;
+                    return (
+                      <Fragment key={venta.id}>
                         <motion.tr
-                          key={`detail-${venta.id}`}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          className="bg-background/30 border-b border-border hover:bg-background/50 transition-colors cursor-pointer"
+                          onClick={() => setExpandedId(isExpanded ? null : venta.id)}
                         >
-                          <TableCell colSpan={8} className="bg-background/40 p-0">
-                            <div className="px-6 py-4">
-                              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Detalle de productos</p>
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr className="border-b border-border text-muted-foreground text-xs">
-                                    <th className="text-left py-1 font-normal">Producto</th>
-                                    <th className="text-right py-1 font-normal">Cant.</th>
-                                    <th className="text-right py-1 font-normal">Precio</th>
-                                    <th className="text-right py-1 font-normal">Subtotal</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {venta.venta_detalle.map((d) => (
-                                    <tr key={d.id} className="border-b border-border/50 last:border-0">
-                                      <td className="py-2">{d.productos?.nombre ?? `Producto #${d.id}`}</td>
-                                      <td className="text-right text-muted-foreground">{d.cantidad}</td>
-                                      <td className="text-right text-muted-foreground font-mono">
-                                        ${Number(d.precio_unitario).toFixed(2)}
-                                      </td>
-                                      <td className="text-right font-mono text-[#99ff3d]">
-                                        ${Number(d.subtotal).toFixed(2)}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                          <td className="px-6 py-4 font-mono text-xs text-muted-foreground">#{venta.id}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground whitespace-nowrap">
+                            {new Date(venta.created_at).toLocaleDateString('es-MX', {
+                              day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+                            })}
+                          </td>
+                          <td className="px-6 py-4 text-sm">{venta.clientes?.nombre ?? 'Público General'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">{venta.usuarios?.nombre ?? '—'}</td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            {METODO_LABEL[venta.metodo_pago] ?? venta.metodo_pago}
+                          </td>
+                          <td className="px-6 py-4 font-bold text-[#99ff3d] font-mono text-right">
+                            ${Number(venta.total).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${estado.cls}`}>
+                              {estado.icon}
+                              {estado.label}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={(e) => handleReprintTicket(venta, e)}
+                                className="p-2 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
+                                title="Reimprimir ticket"
+                              >
+                                <Printer size={16} />
+                              </button>
+                              <button
+                                onClick={(e) => handleShowQR(venta, e)}
+                                className="p-2 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
+                                title="QR para cliente"
+                              >
+                                <QrCode size={16} />
+                              </button>
+                              {isExpanded
+                                ? <ChevronUp size={16} className="text-muted-foreground" />
+                                : <ChevronDown size={16} className="text-muted-foreground" />}
                             </div>
-                          </TableCell>
+                          </td>
                         </motion.tr>
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
+
+                        {isExpanded && (
+                          <motion.tr
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            <td colSpan={8} className="bg-background/40 p-0 border-b border-border">
+                              <div className="px-6 py-4">
+                                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Detalle de productos</p>
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr className="border-b border-border text-muted-foreground text-xs">
+                                      <th className="text-left py-1 font-normal">Producto</th>
+                                      <th className="text-right py-1 font-normal">Cant.</th>
+                                      <th className="text-right py-1 font-normal">Precio</th>
+                                      <th className="text-right py-1 font-normal">Subtotal</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {venta.venta_detalle.map((d) => (
+                                      <tr key={d.id} className="border-b border-border/50 last:border-0">
+                                        <td className="py-2">{d.productos?.nombre ?? `Producto #${d.id}`}</td>
+                                        <td className="text-right text-muted-foreground">{d.cantidad}</td>
+                                        <td className="text-right text-muted-foreground font-mono">
+                                          ${Number(d.precio_unitario).toFixed(2)}
+                                        </td>
+                                        <td className="text-right font-mono text-[#99ff3d]">
+                                          ${Number(d.subtotal).toFixed(2)}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        )}
+                      </Fragment>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </tbody>
+          </table>
+        </div>
       </motion.div>
 
       <QRTicketModal data={qrData} open={!!qrData} onClose={() => setQrData(null)} />

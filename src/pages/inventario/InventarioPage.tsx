@@ -10,10 +10,6 @@ import { useSucursalStore } from '@/store/sucursalStore';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
 
 import { AjusteModal } from './components/AjusteModal';
 import { KardexModal } from './components/KardexModal';
@@ -157,137 +153,160 @@ export default function InventarioPage() {
         ))}
       </div>
 
-      {/* TABLE */}
+      {/* TABLE inventario productos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md overflow-hidden flex-1 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-hidden shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              <TableHead className="w-[60px] bg-background/50">Img</TableHead>
-              <TableHead className="bg-background/50">Producto</TableHead>
-              <TableHead className="bg-background/50">Código</TableHead>
-              <TableHead className="text-right bg-background/50">Cantidad</TableHead>
-              <TableHead className="bg-background/50">Unidad</TableHead>
-              <TableHead className="text-right bg-background/50">Precio Venta</TableHead>
-              <TableHead className="text-center bg-background/50">Estado</TableHead>
-              <TableHead className="text-center bg-background/50">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
-                  <p className="mt-2 text-xs text-muted-foreground">Cargando inventario...</p>
-                </TableCell>
-              </TableRow>
-            ) : !sucursalEfectiva ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
-                  <Package size={36} className="mx-auto mb-3 opacity-20" />
-                  <p>No hay sucursal activa. Inicia sesión nuevamente.</p>
-                </TableCell>
-              </TableRow>
-            ) : items.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
-                  <Boxes size={36} className="mx-auto mb-3 opacity-20" />
-                  <p>No se encontraron productos en el inventario.</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {items.map((item, i) => {
-                  const badge = getStockBadge(item.cantidad, item.stock_minimo ?? 0);
-                  return (
-                    <motion.tr
-                      key={item.id}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04 }}
-                      className="group border-b border-border hover:bg-white/[0.02] transition-colors"
-                    >
-                      {/* Imagen */}
-                      <TableCell>
-                        {item.productos.imagen_url ? (
-                          <div className="w-9 h-9 rounded-md overflow-hidden bg-background/50 border border-border">
-                            <img
-                              src={getImageUrl(item.productos.imagen_url)}
-                              alt={item.productos.nombre}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
+        <div className="relative flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+          <div className="min-w-full">
+            <table className="w-full text-sm text-left rtl:text-right text-foreground">
+            <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
+              <tr>
+                <th scope="col" className="px-6 py-4">
+                  <span className="sr-only">Imagen</span>
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold">
+                  Producto
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold">
+                  Código
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">
+                  Cantidad
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold">
+                  Unidad
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">
+                  Precio Venta
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">
+                  Estado
+                </th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
+                    <p className="mt-2 text-xs text-muted-foreground">Cargando inventario...</p>
+                  </td>
+                </tr>
+              ) : !sucursalEfectiva ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
+                    <Package size={36} className="mx-auto mb-3 opacity-20" />
+                    <p>No hay sucursal activa. Inicia sesión nuevamente.</p>
+                  </td>
+                </tr>
+              ) : items.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
+                    <Boxes size={36} className="mx-auto mb-3 opacity-20" />
+                    <p>No se encontraron productos en el inventario.</p>
+                  </td>
+                </tr>
+              ) : (
+                <AnimatePresence>
+                  {items.map((item, i) => {
+                    const badge = getStockBadge(item.cantidad, item.stock_minimo ?? 0);
+                    return (
+                      <motion.tr
+                        key={item.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        className="bg-background/30 border-b border-border hover:bg-background/50 transition-colors"
+                      >
+                        {/* Imagen */}
+                        <td className="p-4">
+                          {item.productos.imagen_url ? (
+                            <div className="w-12 h-12 rounded-md overflow-hidden bg-background/50 border border-border">
+                              <img
+                                src={getImageUrl(item.productos.imagen_url)}
+                                alt={item.productos.nombre}
+                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30">
+                              <ImageIcon size={20} />
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Nombre */}
+                        <td className="px-6 py-4 font-semibold text-foreground">
+                          {item.productos.nombre}
+                        </td>
+
+                        {/* Código */}
+                        <td className="px-6 py-4 font-mono text-xs text-muted-foreground">
+                          {item.productos.codigo || '—'}
+                        </td>
+
+                        {/* Cantidad */}
+                        <td className="px-6 py-4 text-right">
+                          <span className={`text-xl font-bold font-mono ${item.cantidad === 0 ? 'text-red-400' :
+                              item.cantidad <= (item.stock_minimo ?? 0) ? 'text-yellow-400' :
+                                'text-white'
+                            }`}>
+                            {item.cantidad}
+                          </span>
+                        </td>
+
+                        {/* Unidad */}
+                        <td className="px-6 py-4 text-sm text-muted-foreground">
+                          {item.productos.unidad_medida ?? '—'}
+                        </td>
+
+                        {/* Precio */}
+                        <td className="px-6 py-4 text-right font-mono text-sm text-[#99ff3d]">
+                          ${Number(item.productos.precio_venta).toFixed(2)}
+                        </td>
+
+                        {/* Estado */}
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${badge.cls}`}>
+                            {badge.label}
+                          </span>
+                        </td>
+
+                        {/* Acciones */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => { setAjusteItem(item); setAjusteOpen(true); }}
+                              title="Ajustar stock"
+                              className="p-2 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
+                            >
+                              <SlidersHorizontal size={16} />
+                            </button>
+                            <button
+                              onClick={() => { setKardexItem(item); setKardexOpen(true); }}
+                              title="Ver kardex"
+                              className="p-2 rounded-md text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+                            >
+                              <History size={16} />
+                            </button>
                           </div>
-                        ) : (
-                          <div className="w-9 h-9 rounded-md bg-background/80 border border-border flex items-center justify-center text-muted-foreground/30">
-                            <ImageIcon size={14} />
-                          </div>
-                        )}
-                      </TableCell>
-
-                      {/* Nombre */}
-                      <TableCell className="font-medium text-foreground">{item.productos.nombre}</TableCell>
-
-                      {/* Código */}
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {item.productos.codigo || '—'}
-                      </TableCell>
-
-                      {/* Cantidad */}
-                      <TableCell className="text-right">
-                        <span className={`text-xl font-bold font-mono ${
-                          item.cantidad === 0 ? 'text-red-400' :
-                          item.cantidad <= (item.stock_minimo ?? 0) ? 'text-yellow-400' :
-                          'text-white'
-                        }`}>
-                          {item.cantidad}
-                        </span>
-                      </TableCell>
-
-                      {/* Unidad */}
-                      <TableCell className="text-sm text-muted-foreground">
-                        {item.productos.unidad_medida ?? '—'}
-                      </TableCell>
-
-                      {/* Precio */}
-                      <TableCell className="text-right font-mono text-sm text-[#99ff3d]">
-                        ${Number(item.productos.precio_venta).toFixed(2)}
-                      </TableCell>
-
-                      {/* Estado */}
-                      <TableCell className="text-center">
-                        <Badge className={`text-xs border ${badge.cls}`}>{badge.label}</Badge>
-                      </TableCell>
-
-                      {/* Acciones */}
-                      <TableCell>
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => { setAjusteItem(item); setAjusteOpen(true); }}
-                            title="Ajustar stock"
-                            className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
-                          >
-                            <SlidersHorizontal size={15} />
-                          </button>
-                          <button
-                            onClick={() => { setKardexItem(item); setKardexOpen(true); }}
-                            title="Ver kardex"
-                            className="p-1.5 rounded-md text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
-                          >
-                            <History size={15} />
-                          </button>
-                        </div>
-                      </TableCell>
-                    </motion.tr>
-                  );
-                })}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </tbody>
+          </table>
+          </div>
+        </div>
       </motion.div>
 
       {/* MODALS */}
