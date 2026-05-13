@@ -144,9 +144,9 @@ export default function ProductosPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-y-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-y-auto overflow-x-auto shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <div className="relative overflow-x-auto">
+        <div className="relative">
           <table className="w-full text-sm text-left rtl:text-right text-foreground">
             <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
               <tr>
