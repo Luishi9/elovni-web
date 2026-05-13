@@ -158,9 +158,9 @@ export default function InventarioPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-hidden shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
+        className={`rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl transition-opacity duration-200 ${isSearching ? 'opacity-60' : 'opacity-100'}`}
       >
-        <div className="relative flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <div className="min-w-full">
             <table className="w-full text-sm text-left rtl:text-right text-foreground">
             <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
