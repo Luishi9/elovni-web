@@ -8,10 +8,6 @@ import {
 import { usuariosApi, Usuario } from '@/api/usuarios.api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -154,105 +150,109 @@ export default function UsuariosPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="rounded-xl border border-border bg-card/50 backdrop-blur-md overflow-hidden flex-1 shadow-2xl"
+        className="rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 overflow-y-auto overflow-x-auto shadow-2xl"
       >
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              {['#', 'Nombre', 'Correo', 'Rol', 'Sucursales', 'Creado', ''].map((h) => (
-                <TableHead key={h} className="bg-background/50 text-xs uppercase tracking-wider">
-                  {h}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
-                  <p className="mt-2 text-xs text-muted-foreground">Cargando usuarios…</p>
-                </TableCell>
-              </TableRow>
-            ) : filtrados.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-48 text-center text-muted-foreground">
-                  <Users size={36} className="mx-auto mb-3 opacity-20" />
-                  <p>{search ? 'Sin resultados.' : 'Aún no hay usuarios registrados.'}</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {filtrados.map((u, i) => {
-                  const rol = ROL_CONFIG[u.roles?.nombre] ?? ROL_CONFIG.operador;
-                  const sucursales = u.usuarios_sucursales?.map((us) => us.sucursales.nombre) ?? [];
-                  return (
-                    <motion.tr
-                      key={u.id}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03 }}
-                      className="border-b border-border hover:bg-white/[0.02] transition-colors"
-                    >
-                      <TableCell className="font-mono text-xs text-muted-foreground">#{u.id}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#99ff3d]/20 to-[#99ff3d]/5 border border-[#99ff3d]/20 flex items-center justify-center text-[#99ff3d] font-bold text-xs shrink-0">
-                            {u.nombre.charAt(0).toUpperCase()}
+        <div className="relative">
+          <table className="w-full text-sm text-left rtl:text-right text-foreground">
+            <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
+              <tr>
+                <th scope="col" className="px-6 py-4 font-semibold">#</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Nombre</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Correo</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Rol</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Sucursales</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Creado</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
+                    <p className="mt-2 text-xs text-muted-foreground">Cargando usuarios…</p>
+                  </td>
+                </tr>
+              ) : filtrados.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
+                    <Users size={36} className="mx-auto mb-3 opacity-20" />
+                    <p>{search ? 'Sin resultados.' : 'Aún no hay usuarios registrados.'}</p>
+                  </td>
+                </tr>
+              ) : (
+                <AnimatePresence>
+                  {filtrados.map((u, i) => {
+                    const rol = ROL_CONFIG[u.roles?.nombre] ?? ROL_CONFIG.operador;
+                    const sucursales = u.usuarios_sucursales?.map((us) => us.sucursales.nombre) ?? [];
+                    return (
+                      <motion.tr
+                        key={u.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.03 }}
+                        className="bg-background/30 border-b border-border hover:bg-background/50 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-mono text-xs text-muted-foreground">#{u.id}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#99ff3d]/20 to-[#99ff3d]/5 border border-[#99ff3d]/20 flex items-center justify-center text-[#99ff3d] font-bold text-xs shrink-0">
+                              {u.nombre.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-medium text-sm text-white">{u.nombre}</span>
                           </div>
-                          <span className="font-medium text-sm text-white">{u.nombre}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
-                      <TableCell>
-                        <Badge className={`flex items-center gap-1 w-fit text-[11px] border ${rol.cls}`}>
-                          {rol.icon}
-                          {rol.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {sucursales.length === 0 ? (
-                          <span className="text-xs text-muted-foreground/50">Sin asignar</span>
-                        ) : (
-                          <div className="flex flex-wrap gap-1">
-                            {sucursales.map((s) => (
-                              <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-border text-muted-foreground">
-                                {s}
-                              </span>
-                            ))}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1 w-fit text-[11px] border px-2.5 py-0.5 rounded-full font-medium ${rol.cls}`}>
+                            {rol.icon}
+                            {rol.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {sucursales.length === 0 ? (
+                            <span className="text-xs text-muted-foreground/50">Sin asignar</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {sucursales.map((s) => (
+                                <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-border text-muted-foreground">
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(u.created_at).toLocaleDateString('es-MX', {
+                            day: '2-digit', month: 'short', year: 'numeric',
+                          })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => { setEditando(u); setModalOpen(true); }}
+                              className="p-1.5 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
+                              title="Editar"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button
+                              onClick={() => setEliminarItem(u)}
+                              className="p-1.5 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
+                              title="Eliminar"
+                            >
+                              <Trash2 size={13} />
+                            </button>
                           </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(u.created_at).toLocaleDateString('es-MX', {
-                          day: '2-digit', month: 'short', year: 'numeric',
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => { setEditando(u); setModalOpen(true); }}
-                            className="p-1.5 rounded hover:bg-white/10 text-muted-foreground hover:text-[#99ff3d] transition-colors"
-                            title="Editar"
-                          >
-                            <Pencil size={13} />
-                          </button>
-                          <button
-                            onClick={() => setEliminarItem(u)}
-                            className="p-1.5 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
-                            title="Eliminar"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </TableCell>
-                    </motion.tr>
-                  );
-                })}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </tbody>
+          </table>
+        </div>
       </motion.div>
 
       {/* FORM MODAL */}
