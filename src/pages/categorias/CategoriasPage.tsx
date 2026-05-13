@@ -6,9 +6,6 @@ import { categoriasApi, Categoria } from '@/api/categorias.api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
@@ -120,73 +117,75 @@ export default function CategoriasPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="rounded-xl border border-border bg-card/50 backdrop-blur-md overflow-hidden shadow-2xl"
+        className="rounded-xl border border-border bg-card/50 backdrop-blur-md flex-1 min-h-0 shadow-2xl overflow-y-auto overflow-x-auto"
       >
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              <TableHead className="bg-background/50">#</TableHead>
-              <TableHead className="bg-background/50">Nombre</TableHead>
-              <TableHead className="text-center bg-background/50">Productos</TableHead>
-              <TableHead className="text-center bg-background/50">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-40 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
-                  <p className="mt-2 text-xs text-muted-foreground">Cargando categorías...</p>
-                </TableCell>
-              </TableRow>
-            ) : categorias.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-40 text-center text-muted-foreground">
-                  <Tag size={32} className="mx-auto mb-2 opacity-20" />
-                  <p>No hay categorías aún. ¡Crea la primera!</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <AnimatePresence>
-                {categorias.map((cat, i) => (
-                  <motion.tr
-                    key={cat.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="border-b border-border hover:bg-white/[0.02] transition-colors"
-                  >
-                    <TableCell className="text-muted-foreground text-xs font-mono">{cat.id}</TableCell>
-                    <TableCell className="font-medium text-foreground">{cat.nombre}</TableCell>
-                    <TableCell className="text-center">
-                      <span className="text-sm font-mono text-[#99ff3d]">
-                        {cat._count?.productos ?? 0}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          onClick={() => abrirEditar(cat)}
-                          title="Editar"
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
-                        >
-                          <Pencil size={14} />
-                        </button>
-                        <button
-                          onClick={() => setEliminarItem(cat)}
-                          title="Eliminar"
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </TableCell>
-                  </motion.tr>
-                ))}
-              </AnimatePresence>
-            )}
-          </TableBody>
-        </Table>
+        <div className="relative">
+          <table className="w-full text-sm text-left rtl:text-right text-foreground">
+            <thead className="text-xs font-medium text-muted-foreground bg-background/50 border-b border-border">
+              <tr>
+                <th scope="col" className="px-6 py-4 font-semibold">#</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Nombre</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">Productos</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#99ff3d]" />
+                    <p className="mt-2 text-xs text-muted-foreground">Cargando categorías...</p>
+                  </td>
+                </tr>
+              ) : categorias.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+                    <Tag size={32} className="mx-auto mb-2 opacity-20" />
+                    <p>No hay categorías aún. ¡Crea la primera!</p>
+                  </td>
+                </tr>
+              ) : (
+                <AnimatePresence>
+                  {categorias.map((cat, i) => (
+                    <motion.tr
+                      key={cat.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="bg-background/30 border-b border-border hover:bg-background/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-muted-foreground text-xs font-mono">{cat.id}</td>
+                      <td className="px-6 py-4 font-medium text-foreground">{cat.nombre}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="text-sm font-mono text-[#99ff3d]">
+                          {cat._count?.productos ?? 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => abrirEditar(cat)}
+                            title="Editar"
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-[#99ff3d] hover:bg-[#99ff3d]/10 transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => setEliminarItem(cat)}
+                            title="Eliminar"
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              )}
+            </tbody>
+          </table>
+        </div>
       </motion.div>
 
       {/* MODAL CREAR / EDITAR */}
